@@ -10,7 +10,7 @@
 
 
 /**
- * @file example.cpp
+ * @file spdlog_example.cpp
  * 
  * @brief Example implementation 
  * 
@@ -25,18 +25,15 @@
 
 using std::chrono::high_resolution_clock;
 
-/**
- * @brief Example usage.
- * 
- */
+
 
 /**
- * @brief User supplied platform specific features.
+ * @brief Example of user supplied platform specific details.
  * 
  */
-class ExamplePlatformImpl{
+class PthreadPlatformImpl{
 public:
-    ExamplePlatformImpl(){
+    PthreadPlatformImpl(){
         sem_init(&m_semaphore, 0, 0);
     }
     void wait(){
@@ -59,7 +56,7 @@ private:
 
 
 
-quicklog::LogServer<4, ExamplePlatformImpl> g_server;
+quicklog::LogServer<4, PthreadPlatformImpl> g_server;
 
 
 

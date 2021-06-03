@@ -22,7 +22,7 @@ doxygen
 ```
 to generate documentation.
 
-## Overview
+## Overview of Basic Usage
 
 Each thread that wishes to produce log messages should have it's own LocalLogger
 ```cpp
@@ -30,21 +30,22 @@ quicklog::LocalLogger<N_BUFFERS, BUFFER_SIZE> m_logger;
 ```
 Each LocalLogger will have N_BUFFERS byte buffers of size BUFFER_SIZE. When a buffer fills up the server prints it and the localLogger moves to the next one.
 
-Each LocalLogger should be registed to thr LogServer by it's corresponding thread
+Each LocalLogger should be registered to the LogServer by it's corresponding thread
 ```cpp
 g_server.addLogger(m_logger);
 ```
-Log entries are created by calls to quicklog::LocalLogger::log(), which takes arbitrary arguments as long as they are copyable.
+Log entries are created by calls to quicklog::LocalLogger::log(), which takes arbitrary arguments as long as they are copyable, and compatible with QUICKLOG_PRINT, which can be user defined.
 ```cpp
 m_logger.log("this is a log msg.\n");
 ```
 You'll need to create a LogServer and start it's thread.
 ```cpp
 quicklog::LogServer<MAX_LOCAL_LOGGERS, ExamplePlatformImpl> g_server;
-// ...
+```
+```cpp
 std::thread serverThread(g_server.process, & g_server);
 ```
-and provide platform specific functionality. Like
+Fill out ExamplePlatformImpl from above to provide platform specific details. e.g:
 ```cpp
 class ExamplePlatformImpl{
 public:
@@ -87,6 +88,6 @@ private:
 };
 ```
 
-See quicklog.h for things you can #define to change its behaviour.
+Lastly you can customize quicklog behavior with custom #defines. See quicklog.h for a full list.
 
 

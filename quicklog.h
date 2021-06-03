@@ -41,7 +41,7 @@
  * 
  */
 #ifndef QUICKLOG_PRINT
-#define QUICKLOG_PRINT printf
+#define QUICKLOG_PRINT(...) printf(__VA_ARGS__)
 #endif
 
 
@@ -50,7 +50,7 @@
  * 
  */
 /**
- * @brief Error handling macro called by quicklog. Takes printf-like arguments.
+ * @brief Error handling macro called by quicklog. Takes a const char*.
  * Defaults to
  * \code{.cpp}
  * do{ fprintf(stderr, "ERROR: " __VA_ARGS__); exit(1); } while(0)
@@ -62,22 +62,11 @@
 
 
 
-
-/**
- * @def QUICKLOG_ALIGN
- * 
- */
-/**
- * @brief Alignment used by Quicklog.
- */
-#ifndef QUICKLOG_ALIGN
 #define QUICKLOG_ALIGN (alignof(std::max_align_t))
-#endif
 
 
 
-
-#define MEMORY_FENCE asm volatile ("" : : : "memory")
+#define QUICKLOG_MEMORY_FENCE asm volatile ("" : : : "memory")
 
 /**
  * @brief main namespace
@@ -156,15 +145,7 @@ namespace detail {
         return QUICKLOG_PRINT(std::get<I>(t) ...);
     }
 
-    /**
-     * @brief Call f on unpacked tuple t
-     * 
-     * @tparam Func 
-     * @tparam Tuple 
-     * @param f 
-     * @param t 
-     * @return auto 
-     */
+
     template<typename Tuple>
     auto callPrintFunc(Tuple t){
         constexpr auto size = std::tuple_size<Tuple>::value;
@@ -317,10 +298,10 @@ private:
     virtual bool dump(){
         if(buffersFull.peek()){
             // don't get() from buffersFull until after we've dump()'d the buffer.
-            MEMORY_FENCE;
+            QUICKLOG_MEMORY_FENCE;
             buffers[readIndex].dump();
             ++readIndex;
-            MEMORY_FENCE;
+            QUICKLOG_MEMORY_FENCE;
             buffersFull.get(); //guaranteed to succeed
             return true;
         }

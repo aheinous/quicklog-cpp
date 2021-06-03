@@ -13,7 +13,7 @@
  * g++ -Wall -std=c++14 -O2 example.cpp -pthread 
  * @endcode
  * 
- * To see times run: @code{.sh}
+ * To see execution times run: @code{.sh}
  * ./a.out | grep times -A 3
  * @endcode
  * 
@@ -22,16 +22,13 @@
 
 using std::chrono::high_resolution_clock;
 
-/**
- * @brief Example usage.
- * 
- */
+
 
 /**
- * @brief User supplied platform specific features.
+ * @brief Example of user supplied platform specific details.
  * 
  */
-class ExamplePlatformImpl{
+class StdLibPlatformImpl{
 public:
 
     /**
@@ -40,9 +37,6 @@ public:
      * or
      * should be a call to a semaphore-get function, and notify is a call to 
      * to a semaphore-put function. 
-     * 
-     * 
-     * 
      */
     void wait(){
         std::this_thread::yield();
@@ -50,7 +44,7 @@ public:
 
 
     /**
-     * @brief server is notified og logs being available to print.
+     * @brief server is notified of logs being available to print.
      * 
      */
     void notify(){
@@ -58,7 +52,7 @@ public:
     }
 
     /**
-     * @brief ExamplePlatformImpl should contain a mutex. Lock that mutex.
+     * @brief  A PlatformImpl should contain a mutex. Lock that mutex.
      * 
      */
     void lock(){
@@ -66,7 +60,7 @@ public:
     }
 
     /**
-     * @brief ExamplePlatformImpl should contain a mutex. Unlock that mutex.
+     * @brief  A PlatformImpl should contain a mutex. Unlock that mutex.
      * 
      */
     void unlock(){
@@ -78,7 +72,7 @@ private:
 
 
 
-quicklog::LogServer<4, ExamplePlatformImpl> g_server;
+quicklog::LogServer<4, StdLibPlatformImpl> g_server;
 
 
 
