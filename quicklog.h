@@ -190,8 +190,8 @@ namespace detail {
     public:
 
         template<typename ...Ts>
-        bool pushElem(const LogEntry<Ts ...> elem){
-            constexpr size_t align_sz = alignedSize(sizeof(elem));
+        bool pushEntry(const Ts ... vs){
+            constexpr size_t align_sz = alignedSize(sizeof(LogEntry<Ts ...>));
 
             if(align_sz + m_pos > size){
                 return false;
@@ -199,14 +199,12 @@ namespace detail {
 
             // this will break if used with multiple inheritance
             auto dest = reinterpret_cast< LogEntry<Ts ...>*>( &m_buffer[m_pos] );
-            new (dest) LogEntry<Ts ...>(); // vtable
-            *dest = elem;
+            new (dest) LogEntry<Ts ...>(vs ...);
 
             m_pos += align_sz;
             m_count ++;
             return true;
         }
-
 
         void clear(){
             m_count = 0;
@@ -269,12 +267,10 @@ public:
             return;
         }
 
-        LogEntry<Ts...> ent(vs...);
-        
-        bool success = buffers[writeIndex].pushElem(ent);
+        bool success = buffers[writeIndex].pushEntry(vs ...);
         if(!success){
             nextIndex();
-            success = buffers[writeIndex].pushElem(ent);
+            success = buffers[writeIndex].pushEntry(vs ...);
             if(!success){
                 QUICKLOG_ERROR("Log entries bigger than buffer size\n");
             }
